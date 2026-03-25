@@ -1,0 +1,190 @@
+/* -----------------------------
+   GLOBAL
+----------------------------- */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Courier New", monospace;
+    background: #0a0f1c;
+    color: #e2e8f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* -----------------------------
+   CONTAINER
+----------------------------- */
+.container {
+    width: 90%;
+    max-width: 650px;
+    padding: 30px;
+    background: #0f172a;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0, 255, 170, 0.1);
+    text-align: center;
+}
+
+/* -----------------------------
+   TITLE
+----------------------------- */
+#title {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #22c55e;
+    letter-spacing: 2px;
+}
+
+/* -----------------------------
+   QUESTION
+----------------------------- */
+.question {
+    font-size: 20px;
+    margin-bottom: 20px;
+    color: #38bdf8;
+}
+
+/* -----------------------------
+   OPTIONS (BUTTONS)
+----------------------------- */
+.option {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    background: #111827;
+    color: #e5e7eb;
+    border: 1px solid #1f2937;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 15px;
+}
+
+/* Hover effect */
+.option:hover {
+    background: #1f2937;
+    border-color: #22c55e;
+    transform: scale(1.02);
+}
+
+/* Click effect */
+.option:active {
+    transform: scale(0.97);
+}
+
+/* -----------------------------
+   RESULT SECTION
+----------------------------- */
+.result {
+    margin-top: 20px;
+}
+
+/* -----------------------------
+   ENCRYPTED OUTPUT
+----------------------------- */
+#encrypted-output {
+    margin-top: 20px;
+    padding: 15px;
+    background: #020617;
+    border: 1px dashed #22c55e;
+    color: #22c55e;
+    font-size: 16px;
+    word-wrap: break-word;
+    border-radius: 8px;
+}
+
+/* -----------------------------
+   HINT TEXT
+----------------------------- */
+#hint {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #94a3b8;
+    font-style: italic;
+}
+
+/* -----------------------------
+   SUBTLE GLOW ANIMATION
+----------------------------- */
+@keyframes glow {
+    0% {
+        box-shadow: 0 0 5px rgba(34, 197, 94, 0.2);
+    }
+
+    50% {
+        box-shadow: 0 0 15px rgba(34, 197, 94, 0.4);
+    }
+
+    100% {
+        box-shadow: 0 0 5px rgba(34, 197, 94, 0.2);
+    }
+}
+
+.container {
+    animation: glow 3s infinite;
+    position: relative;
+}
+
+/* -----------------------------
+   RESPONSIVE
+----------------------------- */
+@media (max-width: 600px) {
+    .container {
+        padding: 20px;
+    }
+
+    .question {
+        font-size: 18px;
+    }
+
+    .option {
+        font-size: 14px;
+    }
+}
+
+.register-btn {
+    margin-top: 20px;
+    padding: 12px 20px;
+    font-size: 15px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    background: linear-gradient(135deg, #2563eb, #22c55e);
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.register-btn:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 0 12px rgba(34, 197, 94, 0.6);
+}
+
+.register-btn:active {
+    transform: scale(0.97);
+}
+
+.retake-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+
+    padding: 10px 18px;
+    font-size: 14px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: white;
+    font-weight: 600;
+
+    transition: all 0.3s ease;
+}
+
+.retake-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.6);
+}

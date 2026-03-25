@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="style.css">
+    <title>Personality Engine</title>
+</head>
+
+<body>
+
+    <div id="app" class="container">
+
+        <h1 id="title">Personality Decoder</h1>
+
+        <div id="quiz-container" class="quiz"></div>
+
+        <div id="result-container" class="result"></div>
+
+    </div>
+
+    <script>
+
+        // -----------------------------
+        // TRAITS
+        // -----------------------------
+        let traits = {
+            logic: 0,
+            aggression: 0,
+            morality: 0,
+            chaos: 0,
+            leadership: 0,
+            curiosity: 0
+        };
+
+        // -----------------------------
+        // QUESTIONS (ADD YOUR 15 HERE)
+        // -----------------------------
+        const questions = [
+
+            {
+                q: "What drives you the most?",
+                options: [
+                    { text: "Knowledge & understanding", effect: { logic: 2, curiosity: 1 } },
+                    { text: "Power & control", effect: { aggression: 2, leadership: 1 } },
+                    { text: "Purpose & doing right", effect: { morality: 2, leadership: 1 } },
+                    { text: "Freedom & chaos", effect: { chaos: 2, curiosity: 1 } },
+                    { text: "Influence & leading others", effect: { leadership: 2, logic: 1 } }
+                ]
+            },
+
+            {
+                q: "In a difficult situation, you:",
+                options: [
+                    { text: "Think and plan carefully", effect: { logic: 2, leadership: 1 } },
+                    { text: "Act fast and dominate", effect: { aggression: 2, chaos: 1 } },
+                    { text: "Try to do what’s right", effect: { morality: 2, leadership: 1 } },
+                    { text: "Adapt unpredictably", effect: { chaos: 2, curiosity: 1 } },
+                    { text: "Guide others through it", effect: { leadership: 2, morality: 1 } }
+                ]
+            },
+
+            {
+                q: "If you had great power, you would:",
+                options: [
+                    { text: "Use it responsibly", effect: { morality: 2, leadership: 1 } },
+                    { text: "Control and rule", effect: { aggression: 2, leadership: 1 } },
+                    { text: "Study and understand it", effect: { logic: 2, curiosity: 1 } },
+                    { text: "Experiment freely", effect: { chaos: 2, curiosity: 1 } },
+                    { text: "Use it when needed", effect: { logic: 1, morality: 1 } }
+                ]
+            },
+
+            {
+                q: "Your thinking style is:",
+                options: [
+                    { text: "Logical and analytical", effect: { logic: 2, curiosity: 1 } },
+                    { text: "Instinctive and reactive", effect: { aggression: 1, chaos: 1 } },
+                    { text: "Emotional and empathetic", effect: { morality: 2, leadership: 1 } },
+                    { text: "Creative and unpredictable", effect: { chaos: 2, curiosity: 1 } },
+                    { text: "Strategic and planned", effect: { logic: 2, leadership: 1 } }
+                ]
+            },
+
+            {
+                q: "How do you approach risk and challenges?",
+                options: [
+                    { text: "Carefully calculated", effect: { logic: 2, leadership: 1 } },
+                    { text: "Take charge and face it head-on", effect: { aggression: 2, leadership: 1 } },
+                    { text: "Do what feels right", effect: { morality: 2 } },
+                    { text: "Take risks for excitement", effect: { chaos: 2, curiosity: 1 } },
+                    { text: "Explore and learn from it", effect: { curiosity: 2, logic: 1 } }
+                ]
+            },
+
+            {
+                q: "Your role among people is usually:",
+                options: [
+                    { text: "The strategist", effect: { logic: 2, leadership: 1 } },
+                    { text: "The leader", effect: { leadership: 2, morality: 1 } },
+                    { text: "The protector", effect: { morality: 2, leadership: 1 } },
+                    { text: "The wildcard", effect: { chaos: 2, curiosity: 1 } },
+                    { text: "The explorer", effect: { curiosity: 2, chaos: 1 } }
+                ]
+            },
+
+            {
+                q: "What would your ultimate goal be?",
+                options: [
+                    { text: "Make the world better", effect: { morality: 2, leadership: 1 } },
+                    { text: "Rule or control it", effect: { aggression: 2, leadership: 1 } },
+                    { text: "Understand everything", effect: { logic: 2, curiosity: 1 } },
+                    { text: "Break and reshape it", effect: { chaos: 2, aggression: 1 } },
+                    { text: "Build something new", effect: { logic: 2, leadership: 1 } }
+                ]
+            }
+
+        ];
+
+        // -----------------------------
+        // CHARACTER PROFILES (0–1 SCALE)
+        // -----------------------------
+        const marvelCharacters = [
+            {
+                name: "Spider-Man",
+                profile: { morality: 0.9, curiosity: 0.8, logic: 0.7, chaos: 0.4, leadership: 0.5, aggression: 0.4 }
+            },
+            {
+                name: "Black Panther",
+                profile: { leadership: 0.9, logic: 0.7, morality: 0.8, aggression: 0.6, chaos: 0.3, curiosity: 0.5 }
+            },
+
+            {
+                name: "Thor",
+                profile: { aggression: 0.85, leadership: 0.80, morality: 0.65, chaos: 0.35, logic: 0.30, curiosity: 0.20 }
+            },
+            {
+                name: "Hulk",
+                profile: { aggression: 0.95, chaos: 0.7, morality: 0.4, logic: 0.3, leadership: 0.2, curiosity: 0.2 }
+            },
+            {
+                name: "Vision",
+                profile: { logic: 0.95, morality: 0.8, curiosity: 0.6, chaos: 0.2, leadership: 0.4, aggression: 0.3 }
+            },
+            {
+                name: "Deadpool",
+                profile: { chaos: 0.95, aggression: 0.7, curiosity: 0.6, morality: 0.3, logic: 0.4, leadership: 0.3 }
+            },
+            {
+                name: "Wolverine",
+                profile: { aggression: 0.85, morality: 0.6, chaos: 0.5, logic: 0.4, leadership: 0.3, curiosity: 0.3 }
+            },
+            {
+                name: "Magneto",
+                profile: { leadership: 0.85, aggression: 0.7, logic: 0.7, morality: 0.3, chaos: 0.4, curiosity: 0.5 }
+            },
+            {
+                name: "Green Goblin",
+                profile: { chaos: 0.9, aggression: 0.7, logic: 0.6, morality: 0.2, leadership: 0.5, curiosity: 0.6 }
+            },
+            {
+                name: "Ultron",
+                profile: { logic: 0.95, morality: 0.1, aggression: 0.7, chaos: 0.6, leadership: 0.6, curiosity: 0.7 }
+            },
+            {
+                name: "Wanda / Scarlet Witch",
+                profile: { chaos: 0.95, curiosity: 0.70, morality: 0.50, logic: 0.55, leadership: 0.30, aggression: 0.65 }
+            },
+            {
+                name: "Ant-Man",
+                profile: { curiosity: 0.85, chaos: 0.6, logic: 0.6, morality: 0.6, leadership: 0.3, aggression: 0.3 }
+            },
+            {
+                name: "Hawkeye",
+                profile: { logic: 0.85, morality: 0.80, aggression: 0.30, chaos: 0.10, leadership: 0.40, curiosity: 0.35 }
+            },
+            {
+                name: "Winter Soldier",
+                profile: { aggression: 0.90, logic: 0.75, morality: 0.10, chaos: 0.35, leadership: 0.15, curiosity: 0.20 }
+            },
+            {
+                name: "Gamora",
+                profile: { aggression: 0.85, morality: 0.75, logic: 0.40, chaos: 0.20, leadership: 0.30, curiosity: 0.30 }
+            },
+            {
+                name: "Star-Lord",
+                profile: { chaos: 0.85, leadership: 0.80, morality: 0.40, curiosity: 0.50, logic: 0.20, aggression: 0.30 }
+            },
+
+            {
+                name: "Captain Marvel",
+                profile: { leadership: 0.80, aggression: 0.85, morality: 0.75, logic: 0.45, chaos: 0.20, curiosity: 0.30 }
+            },
+            {
+                name: "Daredevil",
+                profile: { morality: 0.9, aggression: 0.7, logic: 0.6, chaos: 0.3, leadership: 0.5, curiosity: 0.4 }
+            },
+            {
+                name: "Black Widow",
+                profile: { logic: 0.85, leadership: 0.70, morality: 0.55, aggression: 0.65, chaos: 0.30, curiosity: 0.60 }
+            },
+        ];
+
+        // -----------------------------
+        // HACKER PROFILES
+        // -----------------------------
+        const hackerTypes = [
+            {
+                name: "Script Kiddie",
+                profile: { chaos: 0.85, curiosity: 0.80, logic: 0.10, morality: 0.20, aggression: 0.40, leadership: 0.10 }
+            },
+            {
+                name: "Bug Bounty Hunter",
+                profile: { logic: 0.9, curiosity: 0.8, morality: 0.8, chaos: 0.3 }
+            },
+            {
+                name: "Hacktivist",
+                profile: { morality: 0.90, chaos: 0.80, leadership: 0.50, aggression: 0.40, logic: 0.30, curiosity: 0.35 }
+            },
+            {
+                name: "Cyber Spy",
+                profile: { logic: 0.85, morality: 0.10, leadership: 0.60, chaos: 0.30, aggression: 0.30, curiosity: 0.55 }
+            },
+            {
+                name: "Social Engineer",
+                profile: { leadership: 0.9, chaos: 0.6, logic: 0.6, morality: 0.5 }
+            },
+            {
+                name: "Red Team Operator",
+                profile: { logic: 0.85, aggression: 0.6, chaos: 0.6, curiosity: 0.7 }
+            },
+            {
+                name: "Blue Team Defender",
+                profile: { morality: 0.9, logic: 0.8, leadership: 0.6, chaos: 0.2 }
+            },
+            {
+                name: "Reverse Engineer",
+                profile: { logic: 0.95, curiosity: 0.8, chaos: 0.4, morality: 0.5 }
+            },
+            {
+                name: "Exploit Developer",
+                profile: { logic: 0.9, chaos: 0.7, curiosity: 0.7, aggression: 0.5 }
+            },
+            {
+                name: "Cyber Criminal",
+                profile: { morality: 0.1, aggression: 0.8, chaos: 0.7, leadership: 0.5 }
+            },
+            {
+                name: "Security Researcher",
+                profile: { logic: 0.9, curiosity: 0.9, morality: 0.7, chaos: 0.3 }
+            },
+            {
+                name: "Phreaker",
+                profile: { curiosity: 0.90, chaos: 0.75, logic: 0.50, morality: 0.35, aggression: 0.20, leadership: 0.10 }
+            },
+            {
+                name: "Botnet Operator",
+                profile: { leadership: 0.8, aggression: 0.7, chaos: 0.7, logic: 0.6 }
+            },
+            {
+                name: "Digital Forensics Analyst",
+                profile: { logic: 0.9, morality: 0.9, curiosity: 0.6, chaos: 0.2 }
+            },
+            {
+                name: "Zero-Day Hunter",
+                profile: { logic: 0.95, curiosity: 0.95, chaos: 0.6, morality: 0.4 }
+            }
+        ];
+
+        // -----------------------------
+        // STATE
+        // -----------------------------
+        let currentQuestion = 0;
+
+        // -----------------------------
+        // LOAD QUESTION
+        // -----------------------------
+        function loadQuestion() {
+            const container = document.getElementById("quiz-container");
+            container.innerHTML = "";
+
+            let q = questions[currentQuestion];
+
+            let qEl = document.createElement("h2");
+            qEl.className = "question";
+            qEl.innerText = q.q;
+            container.appendChild(qEl);
+
+            q.options.forEach(opt => {
+                let btn = document.createElement("button");
+                btn.className = "option";
+                btn.innerText = opt.text;
+
+                btn.onclick = () => {
+
+                    // update traits
+                    for (let key in opt.effect) {
+                        traits[key] += opt.effect[key];
+                    }
+
+                    currentQuestion++;
+
+                    // 💾 SAVE PROGRESS
+                    localStorage.setItem("quiz_traits", JSON.stringify(traits));
+                    localStorage.setItem("quiz_index", currentQuestion);
+
+                    if (currentQuestion < questions.length) {
+                        loadQuestion();
+                    } else {
+                        processResults();
+                    }
+                };
+
+                container.appendChild(btn);
+            });
+        }
+
+        // -----------------------------
+        // NORMALIZE
+        // -----------------------------
+        function normalizeTraits(traits) {
+            let total = 0;
+            for (let t in traits) total += traits[t];
+
+            let normalized = {};
+            for (let t in traits) {
+                normalized[t] = total === 0 ? 0 : traits[t] / total;
+            }
+            return normalized;
+        }
+
+        // -----------------------------
+        // MATCHING
+        // -----------------------------
+        const allTraits = ["logic", "aggression", "morality", "chaos", "leadership", "curiosity"];
+
+        function getBestMatch(userTraits, profiles) {
+            let best = null;
+            let minDistance = Infinity;
+
+            for (let p of profiles) {
+                let dist = 0;
+
+                for (let t of allTraits) {
+                    let diff = (userTraits[t] || 0) - (p.profile[t] || 0);
+                    dist += diff * diff;
+                }
+
+                if (dist < minDistance) {
+                    minDistance = dist;
+                    best = p.name;
+                }
+            }
+
+            return best;
+        }
+
+
+
+        // -----------------------------
+        // INIT (RESTORE)
+        // -----------------------------
+        function initQuiz() {
+            let savedTraits = localStorage.getItem("quiz_traits");
+            let savedIndex = localStorage.getItem("quiz_index");
+
+            if (savedTraits && savedIndex) {
+                traits = JSON.parse(savedTraits);
+                currentQuestion = parseInt(savedIndex);
+            }
+
+            loadQuestion();
+        }
+
+        initQuiz();
+
+        // -----------------------------
+        // ENCRYPTION
+        // -----------------------------
+
+        // 🔵 Caesar with RANDOM shift
+        function cipher_caesar(text) {
+            let shift = Math.floor(Math.random() * 5) + 2; // 2–6
+
+            let encrypted = text.split('').map(c => {
+                if (/[a-z]/i.test(c)) {
+                    let base = c === c.toUpperCase() ? 65 : 97;
+                    return String.fromCharCode((c.charCodeAt(0) - base + shift) % 26 + base);
+                }
+                return c;
+            }).join('');
+
+            return {
+                text: encrypted,
+                hint: `Caesar cipher (shift = ${shift})`,
+                link: "https://caesar-cipher.com/?mode=decrypt"
+            };
+        }
+
+
+        // 🟢 Reverse
+        function cipher_reverse(text) {
+            return {
+                text: text.split("").reverse().join(""),
+                hint: "Read it backwards",
+                link: "https://cryptii.com/pipes/reverse-text"
+            };
+        }
+
+
+        // 🟡 Base64
+        function cipher_base64(text) {
+            return {
+                text: btoa(text),
+                hint: "Base64 encoding",
+                link: "https://cryptii.com/pipes/base64-to-text"
+            };
+        }
+
+
+        // 🟣 Rotate
+        function cipher_rot13(text) {
+            let encrypted = text.split('').map(c => {
+                if (/[a-z]/i.test(c)) {
+                    let base = c === c.toUpperCase() ? 65 : 97;
+                    return String.fromCharCode((c.charCodeAt(0) - base + 13) % 26 + base);
+                }
+                return c;
+            }).join('');
+
+            return {
+                text: encrypted,
+                hint: "ROT13 cipher",
+                link: "https://cryptii.com/pipes/rot13-decoder"
+            };
+        }
+
+        // 🟠 Binary
+        function cipher_binary(text) {
+            return {
+                text: text.split('').map(c => c.charCodeAt(0).toString(2)).join(' '),
+                hint: "Binary encoding",
+                link: "https://www.rapidtables.com/convert/number/binary-to-ascii.html"
+            };
+        }
+        // -----------------------------
+        // FINAL RESULT
+        // -----------------------------
+        function processResults() {
+            let retake = document.createElement("button");
+            retake.innerText = "🔁 Retake Test";
+            retake.className = "retake-btn";
+
+            retake.onclick = () => {
+
+                // reset traits
+                traits = {
+                    logic: 0,
+                    aggression: 0,
+                    morality: 0,
+                    chaos: 0,
+                    leadership: 0,
+                    curiosity: 0
+                };
+
+                // reset question index
+                currentQuestion = 0;
+                // clear storage
+                localStorage.removeItem("quiz_traits");
+                localStorage.removeItem("quiz_index");
+
+                // clear result screen
+                document.getElementById("result-container").innerHTML = "";
+
+                // restart quiz
+                loadQuestion();
+            };
+
+            // clear saved progress
+            localStorage.removeItem("quiz_traits");
+            localStorage.removeItem("quiz_index");
+
+            let normalized = normalizeTraits(traits);
+
+            let marvel = getBestMatch(normalized, marvelCharacters);
+            let hacker = getBestMatch(normalized, hackerTypes);
+
+            let resultText =
+                `You are ${marvel}\nHacker Type: ${hacker}`;
+
+            // Encrypt
+
+            let ciphers = [
+                cipher_caesar,
+                cipher_reverse,
+                cipher_base64,
+                cipher_rot13,
+                cipher_binary
+            ];
+
+            let chosenCipher = ciphers[Math.floor(Math.random() * ciphers.length)];
+
+            let result = chosenCipher(resultText);
+
+            let encrypted = result.text;
+            let hintText = result.hint;
+
+            // Clear quiz
+            document.getElementById("quiz-container").innerHTML = "";
+
+            let resDiv = document.getElementById("result-container");
+            resDiv.innerHTML = "";
+
+            // Encrypted Output
+            let enc = document.createElement("div");
+            enc.id = "encrypted-output";
+            enc.innerText = encrypted;
+
+            // Hint
+            let hint = document.createElement("div");
+            hint.id = "hint";
+            hint.innerText = `Hint: ${hintText}`;
+
+            // Spoiler container
+            let spoiler = document.createElement("div");
+            spoiler.id = "spoiler-container";
+
+            // Click text
+            let toggle = document.createElement("p");
+            toggle.id = "spoiler-toggle";
+            toggle.innerText = "🔓 Need help decoding? Click to reveal";
+            toggle.style.cursor = "pointer";
+            toggle.style.color = "#007BFF";
+
+            // Hidden content
+            let hidden = document.createElement("div");
+            hidden.id = "spoiler-content";
+            hidden.style.display = "none";
+
+            // Actual link
+            let link = document.createElement("a");
+            link.href = result.link; // from your cipher
+            link.target = "_blank";
+            link.innerText = "Open decoding tool";
+
+
+
+            // Toggle logic
+            toggle.onclick = () => {
+                hidden.style.display = hidden.style.display === "none" ? "block" : "none";
+            };
+
+
+            // 🚀 PROMO SECTION
+            let promo = document.createElement("div");
+            promo.id = "promo-section";
+            promo.innerHTML = `
+        <h2 class="promo-title">🚀 Did you decode it?</h2>
+
+<p class="promo-text">
+    Your next mission awaits. Pick your path or conquer both.
+</p>
+<!-- WORKSHOP SECTION -->
+<div class="promo-block">
+
+    <p class="promo-highlight">📘 Join the Workshop</p>
+
+    <p class="promo-text">
+        Learn how these techniques actually work.<br>
+        Get hands-on experience with cybersecurity concepts and tools.
+    </p>
+
+    <button id="workshop-btn" class="register-btn">
+        🚀 Join the Workshop
+    </button>
+
+</div>
+<!-- CTF SECTION -->
+<div class="promo-block">
+
+    <p class="promo-highlight">🧩 Try the CTF Challenge</p>
+
+    <p class="promo-text">
+        Put your skills to the test with real puzzles.<br>
+        Explore, think, break things (ethically 😉), and have fun competing.
+    </p>
+
+    <button id="ctf-btn" class="register-btn">
+        ⚡ Join the CTF
+    </button>
+
+</div>
+
+
+    `;
+
+            setTimeout(() => {
+
+                document.getElementById("ctf-btn").onclick = () => {
+                    window.open("https://unstop.com/hackathons/capture-the-flag-ctf-mkssss-cummins-college-of-engineering-for-women-ccoew-pune-1649076", "_blank");
+                };
+
+                document.getElementById("workshop-btn").onclick = () => {
+                    window.open("https://unstop.com/workshops-webinars/cyberskills-hands-on-workshop-mkssss-cummins-college-of-engineering-for-women-ccoew-pune-1649079?lb=115JbE8E&utm_medium=Share&utm_source=workshops&utm_campaign=539mokoc5873%E2%81%A0%EF%BF%BD", "_blank");
+                };
+
+            }, 0);
+
+            // Append everything
+            resDiv.appendChild(retake);
+            resDiv.appendChild(enc);
+            resDiv.appendChild(hint);
+            hidden.appendChild(link);
+            spoiler.appendChild(toggle);
+            spoiler.appendChild(hidden);
+
+            resDiv.appendChild(spoiler);
+            resDiv.appendChild(promo);
+
+        }
+        initQuiz();
+    </script>
+
+</body>
+
+</html>
